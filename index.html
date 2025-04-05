@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Function Management Dashboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        input, select, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        
+        textarea {
+            height: 200px;
+            font-family: monospace;
+        }
+        
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        .function-list {
+            margin-top: 30px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        th {
+            background-color: #f2f2f2;
+        }
+        
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .action-buttons button {
+            margin-right: 5px;
+            padding: 5px 10px;
+            font-size: 14px;
+        }
+        
+        .action-buttons .edit {
+            background-color: #f39c12;
+        }
+        
+        .action-buttons .delete {
+            background-color: #e74c3c;
+        }
+        
+        .code-view {
+            margin-top: 20px;
+            display: none;
+        }
+        
+        .code-content {
+            background-color: #f8f8f8;
+            padding: 15px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Function Management Dashboard</h1>
+        
+        <!-- Function Creation Form -->
+        <div id="function-form">
+            <h2>Create New Function</h2>
+            <div class="form-group">
+                <label for="name">Function Name:</label>
+                <input type="text" id="name" placeholder="e.g., hello_world" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="route">Route:</label>
+                <input type="text" id="route" placeholder="e.g., /hello" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="language">Language:</label>
+                <select id="language" required>
+                    <option value="python">Python</option>
+                    <option value="javascript">JavaScript</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="timeout">Timeout (seconds):</label>
+                <input type="number" id="timeout" value="30" min="1" step="0.1" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="code">Code:</label>
+                <textarea id="code" placeholder="Write your function code here..." required></textarea>
+            </div>
+            
+            <button id="submit-btn">Create Function</button>
+            <button id="cancel-btn" style="display:none; background-color: #95a5a6;">Cancel</button>
+        </div>
+        
+        <!-- Function List -->
+        <div class="function-list">
+            <h2>Functions</h2>
+            <button id="run-selected-btn" style="margin-bottom: 10px; background-color: #27ae60;">Run Selected</button>
+            <table id="functions-table">
+                <thead>
+                    <tr>
+                        <th>Select</th>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Route</th>
+                        <th>Language</th>
+                        <th>Timeout</th>
+                        <th>Actions</th>
+                        <th>Execute</th>
+                    </tr>
+                </thead>
+                <tbody id="functions-body">
+                    <!-- Functions will be loaded here -->
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Code View -->
+        <div class="code-view" id="code-view">
+            <h2>Function Code: <span id="code-function-name"></span></h2>
+            <pre class="code-content" id="code-content"></pre>
+            <button id="close-code">Close</button>
+        </div>
+
+        <!-- Console View -->
+        <div class="console-view" id="console-view" style="margin-top: 30px; display: none;">
+            <h2>Execution Console</h2>
+            <pre class="console-content" id="console-content" style="background-color: #000; color: #0f0; padding: 15px; border-radius: 4px; font-family: monospace; white-space: pre-wrap; height: 300px; overflow-y: auto;"></pre>
+            <button id="close-console" style="margin-top: 10px; background-color: #e74c3c;">Close Console</button>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let functions = [];
+        let editingId = null;
+        const API_URL = 'http://localhost:8000';
+        
+        // DOM Elements
+        const nameInput = document.getElementById('name');
+        const routeInput = document.getElementById('route');
+        const languageSelect = document.getElementById('language');
+        const timeoutInput = document.getElementById('timeout');
+        const codeInput = document.getElementById('code');
+        const submitBtn = document.getElementById('submit-btn');
+        const cancelBtn = document.getElementById('cancel-btn');
+        const functionsBody = document.getElementById('functions-body');
+        const codeView = document.getElementById('code-view');
+        const codeContent = document.getElementById('code-content');
+        const codeFunctionName = document.getElementById('code-function-name');
+        const closeCodeBtn = document.getElementById('close-code');
+        const runSelectedBtn = document.getElementById('run-selected-btn');
+        const consoleView = document.getElementById('console-view');
+        const consoleContent = document.getElementById('console-content');
+        const closeConsoleBtn = document.getElementById('close-console');
+        
+        // Load functions when page loads
+        document.addEventListener('DOMContentLoaded', loadFunctions);
+        
+        // Event listeners
+        submitBtn.addEventListener('click', handleSubmit);
+        cancelBtn.addEventListener('click', resetForm);
+        closeCodeBtn.addEventListener('click', hideCodeView);
+        runSelectedBtn.addEventListener('click', runSelectedFunctions);
+        closeConsoleBtn.addEventListener('click', () => {
+            consoleView.style.display = 'none';
+        });
+        
+        // Load all functions
+        async function loadFunctions() {
+            try {
+                const response = await fetch(`${API_URL}/functions/`);
+                functions = await response.json();
+                renderFunctions();
+            } catch (error) {
+                console.error('Error loading functions:', error);
+                alert('Failed to load functions. Please check the console for details.');
+            }
+        }
+        
+        // Render functions table
+        function renderFunctions() {
+            functionsBody.innerHTML = '';
+            
+            if (functions.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = '<td colspan="8" style="text-align: center;">No functions found</td>';
+                functionsBody.appendChild(row);
+                return;
+            }
+            
+            functions.forEach(func => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><input type="checkbox" class="function-checkbox" data-id="${func.id}"></td>
+                    <td>${func.id}</td>
+                    <td>${func.name}</td>
+                    <td>${func.route}</td>
+                    <td>${func.language}</td>
+                    <td>${func.timeout}</td>
+                    <td class="action-buttons">
+                        <button class="view" onclick="viewCode(${func.id})">View Code</button>
+                        <button class="edit" onclick="editFunction(${func.id})">Edit</button>
+                        <button class="delete" onclick="deleteFunction(${func.id})">Delete</button>
+                    </td>
+                    <td>
+                        <button onclick="executeFunction(${func.id})">Run</button>
+                    </td>
+                `;
+                functionsBody.appendChild(row);
+            });
+        }
+        
+        // Handle form submission (create or update)
+        async function handleSubmit() {
+            const functionData = {
+                name: nameInput.value,
+                route: routeInput.value,
+                language: languageSelect.value,
+                timeout: parseFloat(timeoutInput.value),
+                code_path: '', // This will be set by the server
+                code: codeInput.value
+            };
+            
+            try {
+                let response;
+                
+                if (editingId) {
+                    // Update existing function
+                    const updateData = {
+                        route: functionData.route,
+                        language: functionData.language,
+                        timeout: functionData.timeout,
+                        code: functionData.code
+                    };
+                    
+                    response = await fetch(`${API_URL}/functions/${editingId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(updateData)
+                    });
+                } else {
+                    // Create new function
+                    response = await fetch(`${API_URL}/functions/`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(functionData)
+                    });
+                }
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.detail || 'Something went wrong');
+                }
+                
+                resetForm();
+                loadFunctions();
+            } catch (error) {
+                console.error('Error saving function:', error);
+                alert(error.message || 'Failed to save function');
+            }
+        }
+        
+        // View function code
+        async function viewCode(id) {
+            try {
+                const response = await fetch(`${API_URL}/functions/${id}/code`);
+                if (!response.ok) {
+                    throw new Error('Failed to load code');
+                }
+                const data = await response.json();
+                codeFunctionName.textContent = data.name || `Function ID: ${id}`;
+                codeContent.textContent = data.code || 'No code available';
+                codeView.style.display = 'block';
+                codeView.scrollIntoView({ behavior: 'smooth' });
+            } catch (error) {
+                console.error('Error viewing code:', error);
+                alert(error.message || 'Failed to load code');
+            }
+        }
+
+        // Hide code view
+        function hideCodeView() {
+            codeView.style.display = 'none';
+        }
+        
+        // Edit function
+        async function editFunction(id) {
+            const func = functions.find(f => f.id === id);
+            if (!func) {
+                alert('Function not found');
+                return;
+            }
+
+            editingId = id;
+
+            // Populate form fields
+            nameInput.value = func.name;
+            routeInput.value = func.route;
+            languageSelect.value = func.language;
+            timeoutInput.value = func.timeout;
+
+            // Disable name field (cannot change name when editing)
+            nameInput.disabled = true;
+
+            // Get code using the API endpoint instead of a static file path
+            try {
+                const response = await fetch(`${API_URL}/functions/${id}/code`);
+                if (response.ok) {
+                    const data = await response.json();
+                    codeInput.value = data.code || '';
+                } else {
+                    console.error('Error loading code for editing:', `Failed to fetch code`);
+                    alert('Failed to load code for editing');
+                    codeInput.value = '';
+                }
+            } catch (error) {
+                console.error('Error loading code for editing:', error);
+                alert('Unexpected error occurred while loading code.');
+                codeInput.value = '';
+            }
+
+            // Update button text and show cancel button
+            submitBtn.textContent = 'Update Function';
+            cancelBtn.style.display = 'inline-block';
+
+            // Scroll to form
+            document.getElementById('function-form').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Delete function
+        async function deleteFunction(id) {
+            if (!confirm('Are you sure you want to delete this function?')) {
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/functions/${id}`, {
+                    method: 'DELETE'
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Failed to delete function');
+                }
+                
+                loadFunctions();
+            } catch (error) {
+                console.error('Error deleting function:', error);
+                alert('Failed to delete function');
+            }
+        }
+        
+        // Execute function
+        async function executeFunction(id) {
+            try {
+                const response = await fetch(`${API_URL}/functions/${id}/execute`, { method: 'POST' });
+                if (!response.ok) {
+                    throw new Error('Failed to execute function');
+                }
+                const data = await response.json();
+                showConsole(`Function Output:\n${data.logs}`);
+            } catch (error) {
+                console.error('Error executing function:', error);
+                showConsole(`Error: ${error.message}`);
+            }
+        }
+
+        // Execute selected functions
+        async function runSelectedFunctions() {
+            const selectedIds = Array.from(document.querySelectorAll('.function-checkbox:checked'))
+                .map(checkbox => checkbox.dataset.id);
+
+            if (selectedIds.length === 0) {
+                alert('No functions selected.');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/functions/execute`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ function_ids: selectedIds })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to execute selected functions');
+                }
+
+                const data = await response.json();
+                const results = data.results.map(result => {
+                    if (result.logs) {
+                        return `Function ID: ${result.id}\nLogs:\n${result.logs}`;
+                    } else {
+                        return `Function ID: ${result.id}\nError: ${result.error}`;
+                    }
+                }).join('\n\n');
+                showConsole(results);
+            } catch (error) {
+                console.error('Error executing selected functions:', error);
+                showConsole(`Error: ${error.message}`);
+            }
+        }
+
+        function showConsole(content) {
+            consoleContent.textContent = content;
+            consoleView.style.display = 'block';
+            consoleView.scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        // Reset form
+        function resetForm() {
+            editingId = null;
+            nameInput.disabled = false;
+            nameInput.value = '';
+            routeInput.value = '';
+            languageSelect.value = 'python';
+            timeoutInput.value = '30';
+            codeInput.value = '';
+            submitBtn.textContent = 'Create Function';
+            cancelBtn.style.display = 'none';
+        }
+    </script>
+</body>
+</html>
