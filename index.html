@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Function Management Dashboard</title>
+    <style>
+    .metrics-view {
+        background: white;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .time-window-selector {
+        margin-bottom: 15px;
+    }
+
+    .time-window-selector button {
+        margin-right: 5px;
+        padding: 5px 10px;
+        background-color: #3498db;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    .metric-card {
+        background: #f8f8f8;
+        padding: 15px;
+        border-radius: 4px;
+        margin-bottom: 15px;
+        border: 1px solid #ddd;
+    }
+
+    .metric-card h3 {
+        margin-top: 0;
+        color: #2c3e50;
+    }
+</style>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            height: 200px;
+            font-family: monospace;
+        }
+
+        button {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        .function-list {
+            margin-top: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+
+        .action-buttons button {
+            margin-right: 5px;
+            padding: 5px 10px;
+            font-size: 14px;
+        }
+
+        .action-buttons .edit {
+            background-color: #f39c12;
+        }
+
+        .action-buttons .delete {
+            background-color: #e74c3c;
+        }
+
+        .code-view {
+            margin-top: 20px;
+            display: none;
+        }
+
+        .code-content {
+            background-color: #f8f8f8;
+            padding: 15px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+            font-family: monospace;
+            white-space: pre-wrap;
+        }
+    </style>
+    <!-- Add Chart.js for metrics visualization -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        /* Styles for metrics visualization */
+        .metrics-dashboard {
+            margin-top: 30px;
+            padding: 20px;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .metrics-card {
+            background-color: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .metrics-summary {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .metric-box {
+            flex: 1;
+            min-width: 150px;
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border-left: 4px solid #3498db;
+        }
+        
+        .metric-box h3 {
+            margin-top: 0;
+            color: #2c3e50;
+            font-size: 16px;
+        }
+        
+        .metric-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #3498db;
+            margin: 10px 0;
+        }
+        
+        .chart-container {
+            height: 300px;
+            position: relative;
+        }
+        .dashboard-nav button {
+            padding: 10px 15px;
+            margin-right: 10px;
+            background-color: #eee;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .dashboard-nav button.active {
+            background-color: #3498db;
+            color: white;
+        }
+        .dashboard-nav button:hover:not(.active) {
+            background-color: #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Function Management Dashboard</h1>
+        <div class="dashboard-nav" style="margin-bottom:20px;">
+            <button id="show-functions-btn" class="active">Functions</button>
+            <button id="show-metrics-btn">Metrics Dashboard</button>
+        </div>
+        <div id="functions-panel">
+            <!-- Function Creation Form -->
+            <div id="function-form">
+                <h2>Create New Function</h2>
+                <div class="form-group">
+                    <label for="name">Function Name:</label>
+                    <input type="text" id="name" placeholder="e.g., hello_world" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="route">Route:</label>
+                    <input type="text" id="route" placeholder="e.g., /hello" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="language">Language:</label>
+                    <select id="language" required>
+                        <option value="python">Python</option>
+                        <option value="javascript">JavaScript</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="timeout">Timeout (seconds):</label>
+                    <input type="number" id="timeout" value="30" min="1" step="0.1" required>
+                </div>
+                <label for="code">Code:</label>
+                <textarea id="code" placeholder="Write your function code here..." required></textarea>
+                <button id="submit-btn">Create Function</button>
+                <button id="cancel-btn" style="display:none; background-color: #95a5a6;">Cancel</button>
+            </div>
+            <!-- Function List -->
+            <div class="function-list">
+                <h2>Functions</h2>
+                <button id="run-selected-btn" style="margin-bottom: 10px; background-color: #27ae60;">Run Selected</button>
+                <table id="functions-table">
+                    <thead>
+                        <tr>
+                            <th>Select</th>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Route</th>
+                            <th>Language</th>
+                            <th>Timeout</th>
+                            <th>Actions</th>
+                            <th>Execute</th>
+                        </tr>
+                    </thead>
+                    <tbody id="functions-body">
+                        <!-- Functions will be loaded here -->
+                    </tbody>
+                </table>
+            </div>
+            <!-- Code View -->
+            <div class="code-view" id="code-view">
+                <h2>Function Code: <span id="code-function-name"></span></h2>
+                <pre class="code-content" id="code-content"></pre>
+                <button id="close-code">Close</button>
+            </div>
+            <!-- Console View -->
+            <div class="console-view" id="console-view" style="margin-top: 30px; display: none;">
+                <h2>Execution Console</h2>
+                <pre class="console-content" id="console-content" style="background-color: #000; color: #0f0; padding: 15px; border-radius: 4px; font-family: monospace; white-space: pre-wrap; height: 300px; overflow-y: auto;"></pre>
+                <button id="close-console" style="margin-top: 10px; background-color: #e74c3c;">Close Console</button>
+            </div>
+            <div class="metrics-view" id="metrics-view" style="margin-top: 30px; display: none;">
+                <h2>Function Metrics: <span id="metrics-function-name"></span></h2>
+                <div class="time-window-selector">
+                    <button onclick="loadMetrics('1h')">Last Hour</button>
+                    <button onclick="loadMetrics('24h')">Last 24 Hours</button>
+                    <button onclick="loadMetrics('7d')">Last 7 Days</button>
+                </div>
+                <div class="metrics-content" id="metrics-content">
+                    <!-- Metrics will be loaded here -->
+                </div>
+                <button id="close-metrics" style="margin-top: 10px;">Close Metrics</button>
+            </div>
+        </div>
+        <div class="metrics-dashboard" id="metrics-dashboard" style="display:none;">
+            <h2>Performance Metrics Dashboard</h2>
+            <div class="metrics-summary" id="metrics-summary">
+                <!-- Summary metrics will be loaded here -->
+            </div>
+            <div class="metrics-grid">
+                <div class="metrics-card">
+                    <h3>Runtime Comparison</h3>
+                    <div class="chart-container">
+                        <canvas id="runtime-comparison-chart"></canvas>
+                    </div>
+                </div>
+                <div class="metrics-card">
+                    <h3>Function Performance</h3>
+                    <div class="chart-container">
+                        <canvas id="function-performance-chart"></canvas>
+                    </div>
+                </div>
+                <div class="metrics-card">
+                    <h3>Memory Usage</h3>
+                    <div class="chart-container">
+                        <canvas id="memory-usage-chart"></canvas>
+                    </div>
+                </div>
+                <div class="metrics-card">
+                    <h3>CPU Time Trend</h3>
+                    <div class="chart-container">
+                        <canvas id="cpu-time-trend-chart"></canvas>
+                    </div>
+                </div>
+                <div class="metrics-card">
+                    <h3>Logs Trend</h3>
+                    <div class="chart-container">
+                        <canvas id="logs-trend-chart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <button id="refresh-metrics-btn" style="margin-top: 20px; background-color: #2ecc71;">Refresh Metrics</button>
+        </div>
+    </div>
+    <script>
+        // Global variables
+        let functions = [];
+        let editingId = null;
+        const API_URL = 'http://localhost:8000';
+
+        // DOM Elements
+        const nameInput = document.getElementById('name');
+        const routeInput = document.getElementById('route');
+        const languageSelect = document.getElementById('language');
+        const timeoutInput = document.getElementById('timeout');
+        const codeInput = document.getElementById('code');
+        const submitBtn = document.getElementById('submit-btn');
+        const cancelBtn = document.getElementById('cancel-btn');
+        const functionsBody = document.getElementById('functions-body');
+        const codeView = document.getElementById('code-view');
+        const codeContent = document.getElementById('code-content');
+        const codeFunctionName = document.getElementById('code-function-name');
+        const closeCodeBtn = document.getElementById('close-code');
+        const runSelectedBtn = document.getElementById('run-selected-btn');
+        const consoleView = document.getElementById('console-view');
+        const consoleContent = document.getElementById('console-content');
+        const closeConsoleBtn = document.getElementById('close-console');
+        let metricsFunctionId = null;
+
+        // Load functions when page loads
+        document.addEventListener('DOMContentLoaded', loadFunctions);
+
+        // Event listeners
+        submitBtn.addEventListener('click', handleSubmit);
+        cancelBtn.addEventListener('click', resetForm);
+        closeCodeBtn.addEventListener('click', hideCodeView);
+        runSelectedBtn.addEventListener('click', runSelectedFunctions);
+        closeConsoleBtn.addEventListener('click', () => {
+            consoleView.style.display = 'none';
+        });
+
+        // Load all functions
+        async function loadFunctions() {
+            try {
+                const response = await fetch(`${API_URL}/functions/`);
+                functions = await response.json();
+                renderFunctions();
+            } catch (error) {
+                console.error('Error loading functions:', error);
+                alert('Failed to load functions. Please check the console for details.');
+            }
+        }
+
+        // Render functions table
+        function renderFunctions() {
+            functionsBody.innerHTML = '';
+            if (functions.length === 0) {
+                const row = document.createElement('tr');
+                row.innerHTML = '<td colspan="8" style="text-align: center;">No functions found</td>';
+                functionsBody.appendChild(row);
+                return;
+            }
+            functions.forEach(func => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td><input type="checkbox" class="function-checkbox" data-id="${func.id}"></td>
+                    <td>${func.id}</td>
+                    <td>${func.name}</td>
+                    <td>${func.route}</td>
+                    <td>${func.language}</td>
+                    <td>${func.timeout}</td>
+                    <td class="action-buttons">
+                        <button class="view" onclick="viewCode(${func.id})">View Code</button>
+                        <button class="edit" onclick="editFunction(${func.id})">Edit</button>
+                        <button class="delete" onclick="deleteFunction(${func.id})">Delete</button>
+                        <button class="metrics" onclick="viewMetrics(${func.id})">Metrics</button>
+                    </td>
+                    <td>
+                        <button onclick="executeFunction_docker(${func.id})">Run Docker</button>
+                        <button onclick="executeFunction_gvisor(${func.id})">Run with GVisor</button>
+                    </td>
+                `;
+                functionsBody.appendChild(row);
+            });
+        }
+
+        // Handle form submission (create or update)
+        async function handleSubmit() {
+            const functionData = {
+                name: nameInput.value,
+                route: routeInput.value,
+                language: languageSelect.value,
+                timeout: parseFloat(timeoutInput.value),
+                code_path: '', // This will be set by the server
+                code: codeInput.value
+            };
+
+            try {
+                let response;
+                if (editingId) {
+                    // Update existing function
+                    const updateData = {
+                        route: functionData.route,
+                        language: functionData.language,
+                        timeout: functionData.timeout,
+                        code: functionData.code
+                    };
+                    response = await fetch(`${API_URL}/functions/${editingId}`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(updateData)
+                    });
+                } else {
+                    // Create new function
+                    response = await fetch(`${API_URL}/functions/`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(functionData)
+                    });
+                }
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.detail || 'Something went wrong');
+                }
+
+                resetForm();
+                loadFunctions();
+            } catch (error) {
+                console.error('Error saving function:', error);
+                alert(error.message || 'Failed to save function');
+            }
+        }
+
+        // View function code
+        async function viewCode(id) {
+            try {
+                const response = await fetch(`${API_URL}/functions/${id}/code`);
+                if (!response.ok) {
+                    throw new Error('Failed to load code');
+                }
+                const data = await response.json();
+                codeFunctionName.textContent = data.name || `Function ID: ${id}`;
+                codeContent.textContent = data.code || 'No code available';
+                codeView.style.display = 'block';
+                codeView.scrollIntoView({ behavior: 'smooth' });
+            } catch (error) {
+                console.error('Error viewing code:', error);
+                alert(error.message || 'Failed to load code');
+            }
+        }
+
+        // Hide code view
+        function hideCodeView() {
+            codeView.style.display = 'none';
+        }
+
+        // Edit function
+        async function editFunction(id) {
+            const func = functions.find(f => f.id === id);
+            if (!func) {
+                alert('Function not found');
+                return;
+            }
+
+            editingId = id;
+
+            // Populate form fields
+            nameInput.value = func.name;
+            routeInput.value = func.route;
+            languageSelect.value = func.language;
+            timeoutInput.value = func.timeout;
+
+            // Disable name field (cannot change name when editing)
+            nameInput.disabled = true;
+
+            // Get code using the API endpoint instead of a static file path
+            try {
+                const response = await fetch(`${API_URL}/functions/${id}/code`);
+                if (response.ok) {
+                    const data = await response.json();
+                    codeInput.value = data.code || '';
+                } else {
+                    console.error('Error loading code for editing:', `Failed to fetch code`);
+                    alert('Failed to load code for editing');
+                    codeInput.value = '';
+                }
+            } catch (error) {
+                console.error('Error loading code for editing:', error);
+                alert('Unexpected error occurred while loading code.');
+                codeInput.value = '';
+            }
+
+            // Update button text and show cancel button
+            submitBtn.textContent = 'Update Function';
+            cancelBtn.style.display = 'inline-block';
+
+            // Scroll to form
+            document.getElementById('function-form').scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Delete function
+        async function deleteFunction(id) {
+            if (!confirm('Are you sure you want to delete this function?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/functions/${id}`, {
+                    method: 'DELETE'
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to delete function');
+                }
+
+                loadFunctions();
+            } catch (error) {
+                console.error('Error deleting function:', error);
+                alert('Failed to delete function');
+            }
+        }
+
+        // Execute function
+        async function executeFunction_docker(id) {
+            try {
+                const response = await fetch(`${API_URL}/functions/${id}/execute_docker`, { method: 'POST' });
+                if (!response.ok) {
+                    throw new Error('Failed to execute function');
+                }
+                const data = await response.json();
+                let consoleOutput = `Function Output:\n${data.logs}\n\n`;
+                // Display metrics if available
+                if (data.metrics && typeof data.metrics === 'object') {
+                    consoleOutput += 'Execution Metrics:\n';
+                    consoleOutput += `CPU Time: ${data.metrics.cpu_time?.toFixed(2) || 0} ms\n`;
+                    consoleOutput += `Memory Used: ${data.metrics.memory_used?.toFixed(2) || 0} MB\n`;
+                    consoleOutput += `Execution Time: ${data.metrics.exec_time?.toFixed(2) || 0} ms\n`;
+                }
+                showConsole(consoleOutput);
+            } catch (error) {
+                console.error('Error executing function:', error);
+                showConsole(`Error: ${error.message}`);
+            }
+        }
+
+        async function executeFunction_gvisor(id) {
+            try {
+                const response = await fetch(`${API_URL}/functions/${id}/execute_gvisor`, { method: 'POST' });
+                if (!response.ok) {
+                    throw new Error('Failed to execute function');
+                }
+                const data = await response.json();
+                let consoleOutput = `Function Output:\n${data.logs}\n\n`;
+                // Display metrics if available
+                if (data.metrics && typeof data.metrics === 'object') {
+                    consoleOutput += 'Execution Metrics:\n';
+                    consoleOutput += `CPU Time: ${data.metrics.cpu_time?.toFixed(2) || 0} ms\n`;
+                    consoleOutput += `Memory Used: ${data.metrics.memory_used?.toFixed(2) || 0} MB\n`;
+                    consoleOutput += `Execution Time: ${data.metrics.exec_time?.toFixed(2) || 0} ms\n`;
+                }
+                showConsole(consoleOutput);
+            } catch (error) {
+                console.error('Error executing function:', error);
+                showConsole(`Error: ${error.message}`);
+            }
+        }
+
+        // Execute selected functions
+        async function runSelectedFunctions() {
+            const selectedIds = Array.from(document.querySelectorAll('.function-checkbox:checked'))
+                .map(checkbox => checkbox.dataset.id);
+
+            if (selectedIds.length === 0) {
+                alert('No functions selected.');
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/functions/execute`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ function_ids: selectedIds })
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to execute selected functions');
+                }
+
+                const data = await response.json();
+                const results = data.results.map(result => {
+                    if (result.logs) {
+                        return `Function ID: ${result.id}\nLogs:\n${result.logs}`;
+                    } else {
+                        return `Function ID: ${result.id}\nError: ${result.error}`;
+                    }
+                }).join('\n\n');
+                showConsole(results);
+            } catch (error) {
+                console.error('Error executing selected functions:', error);
+                showConsole(`Error: ${error.message}`);
+            }
+        }
+
+        function showConsole(content) {
+            consoleContent.textContent = content;
+            consoleView.style.display = 'block';
+            consoleView.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // Reset form
+        function resetForm() {
+            editingId = null;
+            nameInput.disabled = false;
+            nameInput.value = '';
+            routeInput.value = '';
+            languageSelect.value = 'python';
+            timeoutInput.value = '30';
+            codeInput.value = '';
+            submitBtn.textContent = 'Create Function';
+            cancelBtn.style.display = 'none';
+        }
+
+        // Add this function to view metrics
+        async function viewMetrics(id) {
+            metricsFunctionId = id;
+            functionsPanel.style.display = 'none';
+            metricsView.style.display    = 'block';
+            document.getElementById('metrics-function-name').textContent = 
+              functions.find(f=>f.id===id)?.name || '';
+            loadMetrics('24h');
+        }
+
+        async function loadMetrics(timeWindow) {
+            try {
+                // call per-function metrics endpoint with time_window
+                const response = await fetch(
+                  `${API_URL}/functions/${metricsFunctionId}/metrics?time_window=${timeWindow}`
+                );
+                if (!response.ok) {
+                    throw new Error('Failed to load metrics');
+                }
+                const metrics = await response.json();
+                const metricsContent = document.getElementById('metrics-content');
+                metricsContent.innerHTML = `
+                    <div class="metric-card">
+                        <h3>Execution Statistics</h3>
+                        <p><strong>Total Executions:</strong> ${metrics.count || 0}</p>
+                        <p><strong>Success Rate:</strong> ${(metrics.success_rate*100||0).toFixed(2)}%</p>
+                        <p><strong>Avg Exec Time:</strong> ${metrics.avg_execution_time.toFixed(2)}s</p>
+                        <p><strong>Max Exec Time:</strong> ${metrics.max_execution_time.toFixed(2)}s</p>
+                    </div>
+                    <div class="metric-card">
+                        <h3>Resource Usage</h3>
+                        <p><strong>Avg CPU Time:</strong> ${metrics.avg_cpu_time.toFixed(2)}s</p>
+                        <p><strong>Avg Memory Used:</strong> ${(metrics.avg_memory_used/1024).toFixed(2)} MB</p>
+                        <p><strong>Max Memory Used:</strong> ${(metrics.max_memory_used/1024).toFixed(2)} MB</p>
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Error loading metrics:', error);
+                document.getElementById('metrics-content').innerHTML =
+                  '<p>Failed to load metrics: ' + error.message + '</p>';
+            }
+        }
+
+        // Add this to your global event listeners
+        document.getElementById('close-metrics').addEventListener('click', function() {
+            metricsView.style.display     = 'none';
+            functionsPanel.style.display  = 'block';
+        });
+
+        // DOM Elements for metrics dashboard
+        const metricsSummary = document.getElementById('metrics-summary');
+        const refreshMetricsBtn = document.getElementById('refresh-metrics-btn');
+
+        // Charts
+        let runtimeComparisonChart, functionPerformanceChart, memoryUsageChart, cpuTimeTrendChart, logsTrendChart;
+
+        // Initialize charts when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeCharts();
+            loadMetricsDashboard();
+        });
+
+        // Event listener
+        refreshMetricsBtn.addEventListener('click', loadMetricsDashboard);
+
+        // Initialize charts
+        function initializeCharts() {
+            const runtimeCtx = document.getElementById('runtime-comparison-chart').getContext('2d');
+            runtimeComparisonChart = new Chart(runtimeCtx, {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: 'CPU Time (ms)',
+                            data: [],
+                            backgroundColor: '#3498db',
+                        },
+                        {
+                            label: 'Execution Time (ms)',
+                            data: [],
+                            backgroundColor: '#e74c3c',
+                        }
+                    ],
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Performance by Runtime'
+                        },
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                }
+            });
+
+            const funcCtx = document.getElementById('function-performance-chart').getContext('2d');
+            functionPerformanceChart = new Chart(funcCtx, {
+                type: 'bar',
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            label: 'CPU Time (ms)',
+                            data: [],
+                            backgroundColor: '#3498db',
+                        },
+                        {
+                            label: 'Execution Time (ms)',
+                            data: [],
+                            backgroundColor: '#e74c3c',
+                        }
+                    ],
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Function Performance'
+                        },
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                }
+            });
+
+            const memoryCtx = document.getElementById('memory-usage-chart').getContext('2d');
+            memoryUsageChart = new Chart(memoryCtx, {
+                type: 'pie',
+                data: {
+                    labels: [],
+                    datasets: [
+                        {
+                            data: [],
+                            backgroundColor: [
+                                '#3498db', '#e74c3c', '#2ecc71', '#f39c12', 
+                                '#9b59b6', '#1abc9c', '#34495e', '#d35400'
+                            ],
+                        }
+                    ],
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Memory Usage by Function'
+                        },
+                        legend: {
+                            position: 'right',
+                        }
+                    },
+                }
+            });
+
+            const trendCtx = document.getElementById('cpu-time-trend-chart').getContext('2d');
+            cpuTimeTrendChart = new Chart(trendCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: []
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'CPU Time Trend'
+                        },
+                        legend: {
+                            position: 'top',
+                        }
+                    },
+                    scales: {
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Execution Time'
+                            }
+                        },
+                        y: {
+                            title: {
+                                display: true,
+                                text: 'CPU Time (ms)'
+                            }
+                        },
+                    }
+                }
+            });
+
+            const logsCtx = document.getElementById('logs-trend-chart').getContext('2d');
+            logsTrendChart = new Chart(logsCtx, {
+                type: 'line',
+                data: { labels: [], datasets: [{ label: 'Executions Count', data: [], borderColor: '#9b59b6', fill: false }] },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { title: { display: true, text: 'Logs Trend' } }
+                }
+            });
+        }
+
+        // Load metrics dashboard data
+        async function loadMetricsDashboard() {
+            try {
+                const response = await fetch(`${API_URL}/metrics/summary`);
+                if (!response.ok) {
+                    throw new Error('Failed to load metrics data');
+                }
+                const data = await response.json();
+                updateMetricsSummary(data);
+                updateRuntimeComparisonChart(data.runtime_metrics);
+                updateFunctionPerformanceChart(data.function_metrics);
+                updateMemoryUsageChart(data.function_metrics);
+                updateCpuTimeTrendChart(data.execution_history);
+                await updateLogsTrend();
+            } catch (error) {
+                console.error('Error loading metrics dashboard:', error);
+                alert('Failed to load metrics dashboard.');
+            }
+        }
+
+        // Update metrics summary
+        function updateMetricsSummary(data) {
+            metricsSummary.innerHTML = `
+                <div class="metric-box">
+                    <h3>Total Executions</h3>
+                    <div class="metric-value">${data.total_executions}</div>
+                </div>
+                <div class="metric-box">
+                    <h3>Avg CPU Time</h3>
+                    <div class="metric-value">${data.avg_cpu_time.toFixed(2)} ms</div>
+                </div>
+                <div class="metric-box">
+                    <h3>Avg Memory</h3>
+                    <div class="metric-value">${data.avg_memory.toFixed(2)} MB</div>
+                </div>
+                <div class="metric-box">
+                    <h3>Avg Execution Time</h3>
+                    <div class="metric-value">${data.avg_exec_time.toFixed(2)} ms</div>
+                </div>
+            `;
+        }
+
+        // Update runtime comparison chart
+        function updateRuntimeComparisonChart(runtimeMetrics) {
+            const labels = runtimeMetrics.map(m => m.runtime);
+            const cpuTimes = runtimeMetrics.map(m => m.avg_cpu_time);
+            const execTimes = runtimeMetrics.map(m => m.avg_exec_time);
+            
+            runtimeComparisonChart.data.labels = labels;
+            runtimeComparisonChart.data.datasets[0].data = cpuTimes;
+            runtimeComparisonChart.data.datasets[1].data = execTimes;
+            runtimeComparisonChart.update();
+        }
+
+        // Update function performance chart
+        function updateFunctionPerformanceChart(functionMetrics) {
+            const labels = functionMetrics.map(m => m.function_name);
+            const cpuTimes = functionMetrics.map(m => m.avg_cpu_time);
+            const execTimes = functionMetrics.map(m => m.avg_exec_time);
+            
+            functionPerformanceChart.data.labels = labels;
+            functionPerformanceChart.data.datasets[0].data = cpuTimes;
+            functionPerformanceChart.data.datasets[1].data = execTimes;
+            functionPerformanceChart.update();
+        }
+
+        // Update memory usage chart
+        function updateMemoryUsageChart(functionMetrics) {
+            const labels = functionMetrics.map(m => m.function_name);
+            const memoryUsage = functionMetrics.map(m => m.avg_memory);
+            
+            memoryUsageChart.data.labels = labels;
+            memoryUsageChart.data.datasets[0].data = memoryUsage;
+            memoryUsageChart.update();
+        }
+
+        // Update CPU time trend chart
+        function updateCpuTimeTrendChart(executionHistory) {
+            // Group data by function name
+            const functionData = {};
+
+            executionHistory.forEach(execution => {
+                if (!functionData[execution.function_name]) {
+                    functionData[execution.function_name] = {
+                        times: [],
+                        cpu_times: []
+                    };
+                }
+                // Format date for display
+                const date = new Date(execution.timestamp);
+                const formattedDate = `${date.getMonth()+1}/${date.getDate()} ${date.getHours()}:${date.getMinutes()}`;
+                functionData[execution.function_name].times.push(formattedDate);
+                functionData[execution.function_name].cpu_times.push(execution.cpu_time);
+            });
+
+            // Generate datasets
+            const datasets = [];
+            const colors = ['#3498db', '#e74c3c', '#2ecc71', '#f39c12', '#9b59b6', '#1abc9c'];
+            let colorIndex = 0;
+            for (const [funcName, data] of Object.entries(functionData)) {
+                datasets.push({
+                    label: funcName,
+                    data: data.cpu_times,
+                    borderColor: colors[colorIndex % colors.length],
+                    tension: 0.1,
+                    fill: false
+                });
+                colorIndex++;
+            }
+
+            // Get all timestamps for x-axis
+            let allTimes = [];
+            executionHistory.forEach(execution => {
+                const date = new Date(execution.timestamp);
+                const formattedDate = `${date.getMonth()+1}/${date.getDate()} ${date.getHours()}:${date.getMinutes()}`;
+                if (!allTimes.includes(formattedDate)) {
+                    allTimes.push(formattedDate);
+                }
+            });
+
+            // Sort times
+            allTimes.sort((a, b) => {
+                const dateA = new Date(a);
+                const dateB = new Date(b);
+                return dateA - dateB;
+            });
+
+            cpuTimeTrendChart.data.labels = allTimes;
+            cpuTimeTrendChart.data.datasets = datasets;
+            cpuTimeTrendChart.update();
+        }
+
+        async function updateLogsTrend() {
+            try {
+                const resp = await fetch(`${API_URL}/metrics/logs`);
+                const data = await resp.json();
+                const labels = data.map(d => new Date(d.timestamp).toLocaleString());
+                const counts = data.map(d => d.count);
+                logsTrendChart.data.labels = labels;
+                logsTrendChart.data.datasets[0].data = counts;
+                logsTrendChart.update();
+            } catch (e) {
+                console.error('Error loading logs trend:', e);
+            }
+        }
+
+        // Navigation logic
+        const showFunctionsBtn = document.getElementById('show-functions-btn');
+        const showMetricsBtn   = document.getElementById('show-metrics-btn');
+        const functionsPanel   = document.getElementById('functions-panel');
+        const metricsDashboard = document.getElementById('metrics-dashboard');
+        const metricsView      = document.getElementById('metrics-view');
+
+        showFunctionsBtn.addEventListener('click', () => {
+            functionsPanel.style.display = 'block';
+            metricsDashboard.style.display = 'none';
+            showFunctionsBtn.classList.add('active');
+            showMetricsBtn.classList.remove('active');
+        });
+
+        showMetricsBtn.addEventListener('click', () => {
+            functionsPanel.style.display = 'none';
+            metricsDashboard.style.display = 'block';
+            if (typeof loadMetricsDashboard === 'function') loadMetricsDashboard();
+            showMetricsBtn.classList.add('active');
+            showFunctionsBtn.classList.remove('active');
+        });
+    </script>
+</body>
+</html>

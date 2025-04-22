@@ -1,0 +1,6 @@
+fastapi
+sqlalchemy
+docker
+pydantic
+psutil
+uvicorn
