@@ -1,4 +1,5 @@
 # db.py
+<<<<<<< HEAD
 from sqlalchemy import create_engine, Column, Integer, String, Float, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -11,6 +12,12 @@ from sqlalchemy import DateTime
 
 
 
+=======
+from sqlalchemy import create_engine, Column, Integer, String, Float
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
+
+>>>>>>> origin/main
 DATABASE_URL = "sqlite:///./functions.db"
 engine = create_engine(DATABASE_URL, connect_args={"check_same_thread": False})
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -23,6 +30,7 @@ class Function(Base):
     route = Column(String)
     language = Column(String)
     timeout = Column(Float)
+<<<<<<< HEAD
     code_path = Column(String)
 
 class FunctionMetrics(Base):
@@ -37,3 +45,6 @@ class FunctionMetrics(Base):
     exit_code = Column(Integer)
     runtime = Column(String)  # 'runc' or 'runsc'
     success = Column(Boolean)
+=======
+    code_path = Column(String)
+>>>>>>> origin/main

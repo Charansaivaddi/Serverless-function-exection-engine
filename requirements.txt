@@ -1,6 +1,10 @@
 fastapi
 sqlalchemy
 docker
+<<<<<<< HEAD
 pydantic
 psutil
 uvicorn
+=======
+pydantic
+>>>>>>> origin/main

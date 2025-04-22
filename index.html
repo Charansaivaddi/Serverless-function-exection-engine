@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Function Management Dashboard</title>
     <style>
+<<<<<<< HEAD
     .metrics-view {
         background: white;
         padding: 20px;
@@ -40,6 +41,8 @@
     }
 </style>
     <style>
+=======
+>>>>>>> origin/main
         body {
             font-family: Arial, sans-serif;
             line-height: 1.6;
@@ -48,7 +51,11 @@
             background-color: #f5f5f5;
             color: #333;
         }
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> origin/main
         .container {
             max-width: 1200px;
             margin: 0 auto;
@@ -57,22 +64,38 @@
             border-radius: 8px;
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> origin/main
         h1 {
             color: #2c3e50;
             margin-bottom: 20px;
         }
+<<<<<<< HEAD
 
         .form-group {
             margin-bottom: 15px;
         }
 
+=======
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+>>>>>>> origin/main
         label {
             display: block;
             margin-bottom: 5px;
             font-weight: bold;
         }
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> origin/main
         input, select, textarea {
             width: 100%;
             padding: 8px;
@@ -80,12 +103,20 @@
             border-radius: 4px;
             box-sizing: border-box;
         }
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> origin/main
         textarea {
             height: 200px;
             font-family: monospace;
         }
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> origin/main
         button {
             background-color: #3498db;
             color: white;
@@ -95,6 +126,7 @@
             cursor: pointer;
             font-size: 16px;
         }
+<<<<<<< HEAD
 
         button:hover {
             background-color: #2980b9;
@@ -104,16 +136,32 @@
             margin-top: 30px;
         }
 
+=======
+        
+        button:hover {
+            background-color: #2980b9;
+        }
+        
+        .function-list {
+            margin-top: 30px;
+        }
+        
+>>>>>>> origin/main
         table {
             width: 100%;
             border-collapse: collapse;
         }
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> origin/main
         th, td {
             padding: 12px;
             text-align: left;
             border-bottom: 1px solid #ddd;
         }
+<<<<<<< HEAD
 
         th {
             background-color: #f2f2f2;
@@ -123,11 +171,23 @@
             background-color: #f5f5f5;
         }
 
+=======
+        
+        th {
+            background-color: #f2f2f2;
+        }
+        
+        tr:hover {
+            background-color: #f5f5f5;
+        }
+        
+>>>>>>> origin/main
         .action-buttons button {
             margin-right: 5px;
             padding: 5px 10px;
             font-size: 14px;
         }
+<<<<<<< HEAD
 
         .action-buttons .edit {
             background-color: #f39c12;
@@ -137,11 +197,26 @@
             background-color: #e74c3c;
         }
 
+=======
+        
+        .action-buttons .edit {
+            background-color: #f39c12;
+        }
+        
+        .action-buttons .delete {
+            background-color: #e74c3c;
+        }
+        
+>>>>>>> origin/main
         .code-view {
             margin-top: 20px;
             display: none;
         }
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> origin/main
         .code-content {
             background-color: #f8f8f8;
             padding: 15px;
@@ -151,6 +226,7 @@
             white-space: pre-wrap;
         }
     </style>
+<<<<<<< HEAD
     <!-- Add Chart.js for metrics visualization -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -227,10 +303,13 @@
             background-color: #ddd;
         }
     </style>
+=======
+>>>>>>> origin/main
 </head>
 <body>
     <div class="container">
         <h1>Function Management Dashboard</h1>
+<<<<<<< HEAD
         <div class="dashboard-nav" style="margin-bottom:20px;">
             <button id="show-functions-btn" class="active">Functions</button>
             <button id="show-metrics-btn">Metrics Dashboard</button>
@@ -353,12 +432,92 @@
             <button id="refresh-metrics-btn" style="margin-top: 20px; background-color: #2ecc71;">Refresh Metrics</button>
         </div>
     </div>
+=======
+        
+        <!-- Function Creation Form -->
+        <div id="function-form">
+            <h2>Create New Function</h2>
+            <div class="form-group">
+                <label for="name">Function Name:</label>
+                <input type="text" id="name" placeholder="e.g., hello_world" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="route">Route:</label>
+                <input type="text" id="route" placeholder="e.g., /hello" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="language">Language:</label>
+                <select id="language" required>
+                    <option value="python">Python</option>
+                    <option value="javascript">JavaScript</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="timeout">Timeout (seconds):</label>
+                <input type="number" id="timeout" value="30" min="1" step="0.1" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="code">Code:</label>
+                <textarea id="code" placeholder="Write your function code here..." required></textarea>
+            </div>
+            
+            <button id="submit-btn">Create Function</button>
+            <button id="cancel-btn" style="display:none; background-color: #95a5a6;">Cancel</button>
+        </div>
+        
+        <!-- Function List -->
+        <div class="function-list">
+            <h2>Functions</h2>
+            <button id="run-selected-btn" style="margin-bottom: 10px; background-color: #27ae60;">Run Selected</button>
+            <table id="functions-table">
+                <thead>
+                    <tr>
+                        <th>Select</th>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Route</th>
+                        <th>Language</th>
+                        <th>Timeout</th>
+                        <th>Actions</th>
+                        <th>Execute</th>
+                    </tr>
+                </thead>
+                <tbody id="functions-body">
+                    <!-- Functions will be loaded here -->
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Code View -->
+        <div class="code-view" id="code-view">
+            <h2>Function Code: <span id="code-function-name"></span></h2>
+            <pre class="code-content" id="code-content"></pre>
+            <button id="close-code">Close</button>
+        </div>
+
+        <!-- Console View -->
+        <div class="console-view" id="console-view" style="margin-top: 30px; display: none;">
+            <h2>Execution Console</h2>
+            <pre class="console-content" id="console-content" style="background-color: #000; color: #0f0; padding: 15px; border-radius: 4px; font-family: monospace; white-space: pre-wrap; height: 300px; overflow-y: auto;"></pre>
+            <button id="close-console" style="margin-top: 10px; background-color: #e74c3c;">Close Console</button>
+        </div>
+    </div>
+
+>>>>>>> origin/main
     <script>
         // Global variables
         let functions = [];
         let editingId = null;
         const API_URL = 'http://localhost:8000';
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> origin/main
         // DOM Elements
         const nameInput = document.getElementById('name');
         const routeInput = document.getElementById('route');
@@ -376,11 +535,18 @@
         const consoleView = document.getElementById('console-view');
         const consoleContent = document.getElementById('console-content');
         const closeConsoleBtn = document.getElementById('close-console');
+<<<<<<< HEAD
         let metricsFunctionId = null;
 
         // Load functions when page loads
         document.addEventListener('DOMContentLoaded', loadFunctions);
 
+=======
+        
+        // Load functions when page loads
+        document.addEventListener('DOMContentLoaded', loadFunctions);
+        
+>>>>>>> origin/main
         // Event listeners
         submitBtn.addEventListener('click', handleSubmit);
         cancelBtn.addEventListener('click', resetForm);
@@ -389,7 +555,11 @@
         closeConsoleBtn.addEventListener('click', () => {
             consoleView.style.display = 'none';
         });
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> origin/main
         // Load all functions
         async function loadFunctions() {
             try {
@@ -401,16 +571,28 @@
                 alert('Failed to load functions. Please check the console for details.');
             }
         }
+<<<<<<< HEAD
 
         // Render functions table
         function renderFunctions() {
             functionsBody.innerHTML = '';
+=======
+        
+        // Render functions table
+        function renderFunctions() {
+            functionsBody.innerHTML = '';
+            
+>>>>>>> origin/main
             if (functions.length === 0) {
                 const row = document.createElement('tr');
                 row.innerHTML = '<td colspan="8" style="text-align: center;">No functions found</td>';
                 functionsBody.appendChild(row);
                 return;
             }
+<<<<<<< HEAD
+=======
+            
+>>>>>>> origin/main
             functions.forEach(func => {
                 const row = document.createElement('tr');
                 row.innerHTML = `
@@ -424,17 +606,27 @@
                         <button class="view" onclick="viewCode(${func.id})">View Code</button>
                         <button class="edit" onclick="editFunction(${func.id})">Edit</button>
                         <button class="delete" onclick="deleteFunction(${func.id})">Delete</button>
+<<<<<<< HEAD
                         <button class="metrics" onclick="viewMetrics(${func.id})">Metrics</button>
                     </td>
                     <td>
                         <button onclick="executeFunction_docker(${func.id})">Run Docker</button>
                         <button onclick="executeFunction_gvisor(${func.id})">Run with GVisor</button>
+=======
+                    </td>
+                    <td>
+                        <button onclick="executeFunction(${func.id})">Run</button>
+>>>>>>> origin/main
                     </td>
                 `;
                 functionsBody.appendChild(row);
             });
         }
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> origin/main
         // Handle form submission (create or update)
         async function handleSubmit() {
             const functionData = {
@@ -445,9 +637,16 @@
                 code_path: '', // This will be set by the server
                 code: codeInput.value
             };
+<<<<<<< HEAD
 
             try {
                 let response;
+=======
+            
+            try {
+                let response;
+                
+>>>>>>> origin/main
                 if (editingId) {
                     // Update existing function
                     const updateData = {
@@ -456,6 +655,10 @@
                         timeout: functionData.timeout,
                         code: functionData.code
                     };
+<<<<<<< HEAD
+=======
+                    
+>>>>>>> origin/main
                     response = await fetch(`${API_URL}/functions/${editingId}`, {
                         method: 'PUT',
                         headers: {
@@ -473,12 +676,20 @@
                         body: JSON.stringify(functionData)
                     });
                 }
+<<<<<<< HEAD
 
+=======
+                
+>>>>>>> origin/main
                 if (!response.ok) {
                     const error = await response.json();
                     throw new Error(error.detail || 'Something went wrong');
                 }
+<<<<<<< HEAD
 
+=======
+                
+>>>>>>> origin/main
                 resetForm();
                 loadFunctions();
             } catch (error) {
@@ -486,7 +697,11 @@
                 alert(error.message || 'Failed to save function');
             }
         }
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> origin/main
         // View function code
         async function viewCode(id) {
             try {
@@ -509,7 +724,11 @@
         function hideCodeView() {
             codeView.style.display = 'none';
         }
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> origin/main
         // Edit function
         async function editFunction(id) {
             const func = functions.find(f => f.id === id);
@@ -553,37 +772,62 @@
             // Scroll to form
             document.getElementById('function-form').scrollIntoView({ behavior: 'smooth' });
         }
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> origin/main
         // Delete function
         async function deleteFunction(id) {
             if (!confirm('Are you sure you want to delete this function?')) {
                 return;
             }
+<<<<<<< HEAD
 
+=======
+            
+>>>>>>> origin/main
             try {
                 const response = await fetch(`${API_URL}/functions/${id}`, {
                     method: 'DELETE'
                 });
+<<<<<<< HEAD
 
                 if (!response.ok) {
                     throw new Error('Failed to delete function');
                 }
 
+=======
+                
+                if (!response.ok) {
+                    throw new Error('Failed to delete function');
+                }
+                
+>>>>>>> origin/main
                 loadFunctions();
             } catch (error) {
                 console.error('Error deleting function:', error);
                 alert('Failed to delete function');
             }
         }
+<<<<<<< HEAD
 
         // Execute function
         async function executeFunction_docker(id) {
             try {
                 const response = await fetch(`${API_URL}/functions/${id}/execute_docker`, { method: 'POST' });
+=======
+        
+        // Execute function
+        async function executeFunction(id) {
+            try {
+                const response = await fetch(`${API_URL}/functions/${id}/execute`, { method: 'POST' });
+>>>>>>> origin/main
                 if (!response.ok) {
                     throw new Error('Failed to execute function');
                 }
                 const data = await response.json();
+<<<<<<< HEAD
                 let consoleOutput = `Function Output:\n${data.logs}\n\n`;
                 // Display metrics if available
                 if (data.metrics && typeof data.metrics === 'object') {
@@ -615,6 +859,9 @@
                     consoleOutput += `Execution Time: ${data.metrics.exec_time?.toFixed(2) || 0} ms\n`;
                 }
                 showConsole(consoleOutput);
+=======
+                showConsole(`Function Output:\n${data.logs}`);
+>>>>>>> origin/main
             } catch (error) {
                 console.error('Error executing function:', error);
                 showConsole(`Error: ${error.message}`);
@@ -664,7 +911,11 @@
             consoleView.style.display = 'block';
             consoleView.scrollIntoView({ behavior: 'smooth' });
         }
+<<<<<<< HEAD
 
+=======
+        
+>>>>>>> origin/main
         // Reset form
         function resetForm() {
             editingId = null;
@@ -677,6 +928,7 @@
             submitBtn.textContent = 'Create Function';
             cancelBtn.style.display = 'none';
         }
+<<<<<<< HEAD
 
         // Add this function to view metrics
         async function viewMetrics(id) {
@@ -1056,6 +1308,8 @@
             showMetricsBtn.classList.add('active');
             showFunctionsBtn.classList.remove('active');
         });
+=======
+>>>>>>> origin/main
     </script>
 </body>
 </html>
